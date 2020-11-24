@@ -8,14 +8,18 @@ public class OfficeWorker extends Employee{
 
 
 
-    public double countWorkingTime(MedicalWorker medicalWorker) {
-        Period salaryPeriod = Period.between(medicalWorker.getHireDate(), LocalDate.now());
+    public double countWorkingTime(Employee employee) {
+        Period salaryPeriod = Period.between(employee.getHireDate(), LocalDate.now());
         int months = salaryPeriod.getYears() * 12 + salaryPeriod.getMonths();
         return (double) Math.round((months / 12.0) * 100) / 100;
     }
 
-    public double countWholeSalary(MedicalWorker medicalWorker) {
-        double workTime = countWorkingTime(medicalWorker);
-        return (double) Math.round((workTime * medicalWorker.getSalary()) * 100) / 100;
+    public double countWholeSalary(Employee employee) {
+        double workTime = countWorkingTime(employee);
+        return (double) Math.round((workTime * employee.getSalary()) * 100) / 100;
+    }
+
+    public void registerNewPatient() {
+
     }
 }
