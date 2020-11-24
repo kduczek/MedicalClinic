@@ -64,4 +64,13 @@ public class Employee {
     public void setSalary(double salary) {
         this.salary = salary;
     }
+
+    public void printData() {
+        System.out.println("Name: " + this.name);
+        System.out.println("Surname: " + this.surname);
+        System.out.println("Date of birth: " + this.birthDate.toString());
+        System.out.println("Salary: " + this.salary);
+        System.out.println("Date of employment: " + this.hireDate.toString());
+        System.out.println("Employee code: " + this.employeeCode);
+    }
 }
