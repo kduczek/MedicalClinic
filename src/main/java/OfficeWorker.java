@@ -1,3 +1,4 @@
+import javax.naming.directory.InvalidAttributesException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
@@ -14,20 +15,28 @@ public class OfficeWorker extends Employee{
         super(employeeCode, name, surname, birthDate, hireDate, salary);
     }
 
-
-
-    public double countWorkingTime(Employee employee) {
+    //Method which is counting working time in months using Period class
+    private double countWorkingTimeInMonths(Employee employee) {
         Period salaryPeriod = Period.between(employee.getHireDate(), LocalDate.now());
         int months = salaryPeriod.getYears() * 12 + salaryPeriod.getMonths();
-        return (double) Math.round((months / 12.0) * 100) / 100;
+        return (double) Math.round((months) * 100) / 100;
     }
 
+    //Method which count working time in years with decimal places
+    public double countWorkingTime(Employee employee) {
+        return (double) Math.round((countWorkingTimeInMonths(employee) / 12.0) * 100) / 100;
+    }
+
+
+    //Method which counts money earned from the start of work to now
     public double countWholeSalary(Employee employee) {
-        double workTime = countWorkingTime(employee);
+        double workTime = countWorkingTimeInMonths(employee);
         return (double) Math.round((workTime * employee.getSalary()) * 100) / 100;
     }
 
-    public Patient registerNewPatient() {
+    //Main function of OfficeWorker class, taking info about new patient and creating new Object of class Patient
+    //and returning it
+    public Patient registerNewPatient() throws InvalidAttributesException {
         LocalDate birthdate;
         System.out.println("Please insert name: ");
         String name = scanner.nextLine();
@@ -43,14 +52,15 @@ public class OfficeWorker extends Employee{
         int month = scanner.nextInt();
         scanner.nextLine();
 
-        System.out.println();
+        System.out.println("Please enter day");
         int day = scanner.nextInt();
         scanner.nextLine();
 
         if(verifyBirthDate(year, month, day)) {
             birthdate = LocalDate.of(year, month, day);
-        } else {
-            throw new IllegalArgumentException();
+        }
+        else {
+            throw new InvalidAttributesException();
         }
 
 
@@ -73,13 +83,13 @@ public class OfficeWorker extends Employee{
             printMedicalProcedures();
             int option = scanner.nextInt();
             scanner.nextLine();
-            treatments[i] = listOfTreatments.get(option);
+            treatments[i] = listOfTreatments.get(option - 1);
         }
 
-        scanner.close();
         return new Patient(name, surname, birthdate, treatments);
     }
 
+    //Simple method to avoid print repetition and clean up code
     private void printMedicalProcedures() {
         System.out.println("Available medical procedures:");
         System.out.println("1. Injection");
@@ -91,6 +101,7 @@ public class OfficeWorker extends Employee{
         System.out.println("7. Writing a prescription");
     }
 
+    //Method which takes 3 ints, creates LocalDate from them and validating if date is correct
     private static boolean verifyBirthDate(int year, int month, int day) {
         String date = year + "-" + month + "-" + day;
 
@@ -106,7 +117,6 @@ public class OfficeWorker extends Employee{
             valid = true;
 
         } catch (DateTimeParseException e) {
-            e.printStackTrace();
             valid = false;
         }
 

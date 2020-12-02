@@ -1,11 +1,28 @@
+import javax.naming.directory.InvalidAttributesException;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
 
 public class Main {
     private static final Scanner scanner = new Scanner(System.in);
+    private static final Logger logger = Logger.getLogger("");
+    private static FileHandler fh;
+
+    //Try block in case if IOException
+    static {
+        try {
+            fh = new FileHandler("log.txt");
+            logger.addHandler(fh);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) {
         int option;
         int employeeCode;
@@ -42,39 +59,45 @@ public class Main {
             printOptions();
             option = scanner.nextInt();
             scanner.nextLine();
-            if(option > 5 || option < 1) {
-                System.out.println("Wrong number! You have to choose again! \n");
-            }
 
             switch (option) {
                 case 1:
                     try {
+                        //creating new patient and catching possible Exception
                         Patient patient = officeWorker.registerNewPatient();
                         String[] treatmentsTab = patient.getTreatments();
                         boolean isDoctorNeeded = true;
-                        for (String treatment : treatmentsTab) {
-                            if (treatment.equals("General check up")
-                                    || treatment.equals("Ultrasound examination")
-                                    || treatment.equals("Writing a prescription")) {
-                                patient.setPatron(nurse);
 
-                                if (patient.isMature()) {
+                        for(int i = 0; i < treatmentsTab.length; i++) {
+                            String temp = treatmentsTab[i];
+                            if(temp.equals("General check up") || temp.equals("Ultrasound examination") || temp.equals("Writing a prescription")) {
+                                if(patient.isMature()) {
                                     patient.setPatron(internist);
                                 } else {
                                     patient.setPatron(pediatrician);
                                 }
-
-                                isDoctorNeeded = false;
+                                isDoctorNeeded = true;
                                 break;
+                            } else {
+                                isDoctorNeeded = false;
                             }
                         }
-
+                        System.out.println("I am here too");
                         if (!isDoctorNeeded) {
                             patient.setPatron(nurse);
                         }
-                    } catch (IllegalArgumentException iae) {
+
+                        logger.info("Name: " + patient.getName() +
+                                "\nSurname: " + patient.getSurname() +
+                                "\nDate of birth: " + patient.getBirthDate().toString() +
+                                "\n" + patient.listOfTreatments());
+
+                        logger.info(patient.getPatron().printTreatment(patient));
+
+                    } catch (InvalidAttributesException iae) {
                         System.err.println("Wrong date");
                     }
+
                     break;
                 case 2:
                     employeeCode = getEmployeeCodeFromUser();
@@ -114,8 +137,7 @@ public class Main {
                     scanner.close();
                     return;
                 default:
-                    System.err.println("Error!");
-                    return;
+                    System.err.println("Error, wrong number! \nInsert number again!");
             }
         }
 

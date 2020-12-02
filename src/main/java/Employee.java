@@ -65,6 +65,7 @@ public class Employee {
         this.salary = salary;
     }
 
+    //Method which prints all data about Employee
     public void printData() {
         System.out.println("Name: " + this.name);
         System.out.println("Surname: " + this.surname);

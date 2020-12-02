@@ -39,9 +39,20 @@ public class Patient {
         this.patron = patron;
     }
 
+    //Checking if patient is mature, if is his patron is internist, if not - pediatrician
     public boolean isMature() {
         Period age = Period.between(this.birthDate, LocalDate.now());
 
         return age.getYears() >= 18;
+    }
+
+    //Converting String Array to a simple String to insert it into Log
+    public String listOfTreatments() {
+        StringBuilder stringBuilder = new StringBuilder("Treatments: ");
+        for(String temp : this.treatments) {
+            stringBuilder.append(temp).append(", ");
+        }
+
+        return stringBuilder.toString();
     }
 }
