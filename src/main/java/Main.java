@@ -1,6 +1,7 @@
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class Main {
@@ -47,34 +48,80 @@ public class Main {
 
             switch (option) {
                 case 1:
-                    officeWorker.registerNewPatient();
+                    try {
+                        Patient patient = officeWorker.registerNewPatient();
+                        String[] treatmentsTab = patient.getTreatments();
+                        boolean isDoctorNeeded = true;
+                        for (String treatment : treatmentsTab) {
+                            if (treatment.equals("General check up")
+                                    || treatment.equals("Ultrasound examination")
+                                    || treatment.equals("Writing a prescription")) {
+                                patient.setPatron(nurse);
+
+                                if (patient.isMature()) {
+                                    patient.setPatron(internist);
+                                } else {
+                                    patient.setPatron(pediatrician);
+                                }
+
+                                isDoctorNeeded = false;
+                                break;
+                            }
+                        }
+
+                        if (!isDoctorNeeded) {
+                            patient.setPatron(nurse);
+                        }
+                    } catch (IllegalArgumentException iae) {
+                        System.err.println("Wrong date");
+                    }
                     break;
                 case 2:
                     employeeCode = getEmployeeCodeFromUser();
                     try {
                         verifyEmployeeCode(employeeList, employeeCode);
-                        System.out.println("Total salary: " +
-                                officeWorker.countWholeSalary(returnEmployeeWhichHasThisCode(employeeList, employeeCode)));
+                        System.out.println("Total salary " +
+                                officeWorker.countWholeSalary(returnEmployeeWhichHasThisCode(employeeList, employeeCode)) + " zl");
                     } catch (IllegalArgumentException iae) {
                         System.err.println("Wrong employee code!");
                     }
+                    break;
 
-                    break;
                 case 3:
+                    employeeCode = getEmployeeCodeFromUser();
+                    try {
+                        verifyEmployeeCode(employeeList, employeeCode);
+                        System.out.println("Time of employment " +
+                                officeWorker.countWorkingTime(Objects.requireNonNull(returnEmployeeWhichHasThisCode(employeeList, employeeCode))) + "year(s)");
+                    } catch (IllegalArgumentException iae) {
+                        System.err.println("Wrong employee code!");
+                    }
                     break;
+
                 case 4:
+                    employeeCode = getEmployeeCodeFromUser();
+                    try {
+                        verifyEmployeeCode(employeeList, employeeCode);
+                        System.out.println("All informations about this employee");
+                        Objects.requireNonNull(returnEmployeeWhichHasThisCode(employeeList, employeeCode)).printData();
+
+                    } catch (IllegalArgumentException iae) {
+                        System.err.println("Wrong employee code!");
+                    }
                     break;
                 case 5:
                     System.out.println("Finishing program ...");
                     scanner.close();
                     return;
                 default:
-                    System.out.println("Error!");
+                    System.err.println("Error!");
+                    return;
             }
         }
 
     }
 
+    //Simple method to print all available options without code repetition
     private static void printOptions() {
         System.out.println("~~~~~~Medical Clinic~~~~~");
         System.out.println("List of possible actions:");
@@ -85,6 +132,7 @@ public class Main {
         System.out.println("5. Finish");
     }
 
+    //Simple method which take user input and returns it as an integer
     private static int getEmployeeCodeFromUser() {
         System.out.println("Type employee code: ");
         int code = scanner.nextInt();
@@ -93,15 +141,18 @@ public class Main {
         return code;
     }
 
-    private static boolean verifyEmployeeCode(List<Employee> employeeList, int code) {
+    //void method which have to throw exception when we provide employee code of non-existing employee,
+    //otherwise the method does nothing
+    private static void verifyEmployeeCode(List<Employee> employeeList, int code) {
         for(Employee emp : employeeList) {
             if(emp.getEmployeeCode() == code) {
-                return true;
+                return;
             }
         }
         throw new IllegalArgumentException();
     }
 
+    //method that returns employee from list which fulfills required condition
     private static Employee returnEmployeeWhichHasThisCode(List<Employee> employeeList, int employeeCode) {
         for(Employee emp : employeeList) {
             if(emp.getEmployeeCode() == employeeCode) {
