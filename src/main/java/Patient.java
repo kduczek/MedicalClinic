@@ -39,6 +39,22 @@ public class Patient {
         this.patron = patron;
     }
 
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
+
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public void setTreatments(String[] treatments) {
+        this.treatments = treatments;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     //Checking if patient is mature, if is his patron is internist, if not - pediatrician
     public boolean isMature() {
         Period age = Period.between(this.birthDate, LocalDate.now());

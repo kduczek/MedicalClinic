@@ -82,7 +82,7 @@ public class Main {
                                 isDoctorNeeded = false;
                             }
                         }
-                        System.out.println("I am here too");
+
                         if (!isDoctorNeeded) {
                             patient.setPatron(nurse);
                         }
